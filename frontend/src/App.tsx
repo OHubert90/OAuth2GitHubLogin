@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import GitHubLoginButton from './GitHubLoginButton';
 
 interface User {
     id: string;
@@ -15,8 +14,13 @@ const App: React.FC = () => {
         const fetchUser = async () => {
             try {
                 const response = await axios.get('/user');
-                setUser(response.data);
+                if (response.data) {
+                    setUser(response.data);
+                } else {
+                    setUser(null);
+                }
             } catch (error) {
+                setUser(null);
                 console.error('Error fetching user:', error);
             }
         };
@@ -28,21 +32,30 @@ const App: React.FC = () => {
         try {
             await axios.post('/logout');
             setUser(null);
+            window.location.href = '/';
         } catch (error) {
             console.error('Error logging out:', error);
         }
     };
 
+    const handleLogin = () => {
+        window.location.href = '/oauth2/authorization/github';
+    };
+
     return (
-        <div>
+        <div style={{ textAlign: 'center', marginTop: '50px' }}>
             {user ? (
                 <>
                     <h1>Welcome, {user.username}</h1>
                     <p>Email: {user.email}</p>
-                    <button onClick={handleLogout}>Logout</button>
+                    <button onClick={handleLogout} style={{ fontSize: '16px', padding: '10px 20px', cursor: 'pointer' }}>
+                        Logout
+                    </button>
                 </>
             ) : (
-                <GitHubLoginButton />
+                <button onClick={handleLogin} style={{ fontSize: '16px', padding: '10px 20px', cursor: 'pointer' }}>
+                    Login with GitHub
+                </button>
             )}
         </div>
     );

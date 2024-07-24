@@ -4,10 +4,16 @@ import com.github.ohubert90.oauthgithublogin.user.User;
 import com.github.ohubert90.oauthgithublogin.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.servlet.ServletException; // Import korrigiert
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+import java.io.IOException;
 
 @RestController
 public class OAuth2Controller {
@@ -27,5 +33,11 @@ public class OAuth2Controller {
             userRepository.save(user);
         }
         return user;
+    }
+
+    @PostMapping("/logout")
+    public void logout(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        request.logout();
+        response.sendRedirect("/");
     }
 }
